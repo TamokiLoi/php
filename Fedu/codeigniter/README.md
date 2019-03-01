@@ -1,0 +1,1 @@
+take folder src and run folder src in htdoc of xamp or wamp
