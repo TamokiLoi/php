@@ -9,9 +9,18 @@ class employee_model extends CI_Model {
 		parent::__construct();
 	}
 
-	public function insertDataToMySQL($name, $age, $phone_number, $avatar_image, $link_fb, $order_amount)
+	// handle get_all_data from sql to show-layout
+	public function getAllData()
 	{
-		// handle get_data and update to mysql
+		$this->db->select('*');
+		$data = $this->db->get('employee');
+		$data = $data->result_array();
+		return $data;
+	}
+
+	// handle get_data and update from layout to sql
+	public function insertData($name, $age, $phone_number, $avatar_image, $link_fb, $order_amount)
+	{
 		$data = array(
 			'name' => $name,
 			'age' => $age,
@@ -23,7 +32,6 @@ class employee_model extends CI_Model {
 		$this->db->insert('employee', $data);
 		return $this->db->insert_id();
 	}
-
 }
 
 /* End of file employee_model.php */

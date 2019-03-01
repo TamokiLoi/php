@@ -9,8 +9,14 @@ class employee extends CI_Controller {
 
 	public function index()
 	{
-		$this->load->view('employee_view');
+		$this->load->model('employee_model');
+		$result = $this->employee_model->getAllData();
+		$result = array('list_employees' => $result);
+
+		// pass data to view
+		$this->load->view('employee_view', $result);
 	}
+
 	public function add_employee()
 	{
 		// handle upload avatar_image
@@ -67,14 +73,22 @@ class employee extends CI_Controller {
 
 		// call model
 		$this->load->model('employee_model');
-		$data = $this->employee_model->insertDataToMySQL($name, $age, $phone_number, $avatar_image, $link_fb, $order_amount);
+		$data = $this->employee_model->insertData($name, $age, $phone_number, $avatar_image, $link_fb, $order_amount);
 		if($data) {
-			echo "insert complete";
 			$this->load->view('insert_success_view');
 		} else {
-			echo "inserl failed";
+			echo "insert failed";
 		}
+	}
 
+	public function edit_employee()
+	{
+		echo "code edit employee";
+	}
+
+	public function delete_employee()
+	{
+		echo "code delete employee";
 	}
 }
 

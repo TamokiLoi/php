@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head>
 	<meta charset="utf-8">
-	<meta http-equiv="refresh" content="1;url=<?php echo base_url(); ?>/index.php/employee">
+	<meta http-equiv="refresh" content="2;url=<?php echo base_url(); ?>index.php/employee">
 	<title>Added new employee success</title>
 	<script type="text/javascript" src="<?php echo base_url() ?>vendor/bootstrap.js"></script>
  	<script type="text/javascript" src="<?php echo base_url() ?>1.js"></script>

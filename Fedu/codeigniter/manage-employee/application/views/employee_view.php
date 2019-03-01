@@ -20,25 +20,31 @@
  	<div class="container">
  		<div class="row">
  			<!-- begin card-columns -->
- 			<div class="card-columns">
+ 			<?php foreach ($list_employees as $item): ?>
+ 			<div class="col-sm-4">
  				<div class="card">
- 					<img class="card-img-top img-fluid" src="http://placehold.it/400x400" alt="Card image cap">
+ 					<img class="card-img-top img-fluid" src="<?= $item['avatar_image'] ?>" alt="Card image cap">
  					<div class="card-block">	
- 						<h4 class="card-title name">Nguyen Lam Thanh Loi</h4>
- 						<p class="card-text age">Age: <b>29</b></p>
- 						<p class="card-text tel">Tel: <b>0938947221</b></p>
- 						<p class="card-text order-amount">Order Amount Complete: 5</p>
+ 						<h4 class="card-title name"><?= $item['name'] ?></h4>
+ 						<p class="card-text age">Age: <b><?= $item['age'] ?></b></p>
+ 						<p class="card-text tel">Tel: <b><?= $item['phone_number'] ?></b></p>
+ 						<p class="card-text order-amount">Order Amount Complete: <?= $item['order_amount'] ?></p>
  						<p class="card-text link-fb">
- 							<small>
- 								<a href="#link-fb" class="btn btn-secondary btn-xs">
- 									Facebook <i class="fa fa-chevron-right"></i>
- 								</a>
+ 							<small><a href="<?= $item['link_fb'] ?>" class="btn btn-info btn-xs" target="_blank">
+ 								Facebook <i class="fa fa-chevron-right"></i></a>
+ 							</small>
+ 							<small><a href="<?= base_url() ?>index.php/employee/edit_employee" class="btn btn-warning btn-xs">
+ 								Edit <i class="fa fa-pencil"></i></a>
+ 							</small>
+ 							<small><a href="<?= base_url() ?>index.php/employee/delete_employee" class="btn btn-danger btn-xs">
+ 								Delete <i class="fa fa-remove"></i></a>
  							</small>
  						</p>
  						<p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
  					</div>
  				</div>
- 			</div> 
+ 			</div>
+ 			<?php endforeach ?>
  			<!-- end card-columns -->
  		</div>
 
@@ -49,7 +55,7 @@
 	 		</div>
  		</div>
 
- 		<form method="post" enctype="multipart/form-data" action="<?= base_url() ?>/index.php/employee/add_employee">
+ 		<form method="post" enctype="multipart/form-data" action="<?= base_url() ?>index.php/employee/add_employee">
  			<div class="form-group row">
  				<!-- avatar-image -->
  				<div class="col-sm-6">
