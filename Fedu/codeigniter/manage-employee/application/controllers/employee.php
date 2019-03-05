@@ -1,5 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+include 'UploadHandler.php';
 class employee extends CI_Controller {
 
 	public function __construct()
@@ -181,6 +182,31 @@ class employee extends CI_Controller {
 		{
 			echo 'Delete not completed, please review code!';
 		}
+	}
+
+	public function ajax_add_employee()
+	{
+		// get data form from employee_view
+		$name = $this->input->post('name');
+		$age = $this->input->post('age');
+		$phone_number = $this->input->post('phone_number');
+		$avatar_image = $this->input->post('avatar_image');
+		$link_fb = $this->input->post('link_fb');
+		$order_amount = $this->input->post('order_amount');
+
+		// call model
+		$this->load->model('employee_model');
+		$data = $this->employee_model->insertData($name, $age, $phone_number, $avatar_image, $link_fb, $order_amount);
+		if($data) {
+			echo "Insert complete!";
+		} else {
+			echo "Insert failed, please review code!";
+		}
+	}
+
+	public function uploadFile()
+	{
+		$uploadFile = new UploadHandler();
 	}
 }
 

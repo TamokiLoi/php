@@ -13,6 +13,7 @@ class employee_model extends CI_Model {
 	public function getAllData()
 	{
 		$this->db->select('*');
+		$this->db->order_by('id', 'desc');
 		$data = $this->db->get('employee');
 		$data = $data->result_array();
 		return $data;
