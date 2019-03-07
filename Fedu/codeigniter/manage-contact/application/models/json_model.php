@@ -32,6 +32,16 @@ class json_model extends CI_Model {
 		return $result;
 	}
 
+	public function updateData($newData)
+	{
+		$this->db->where('name', 'contact');
+		$data = [
+		    'name' => 'contact',
+		    'data' =>  $newData
+		];
+		$this->db->update('warehouse', $data);
+	}
+
 }
 
 /* End of file json_model.php */

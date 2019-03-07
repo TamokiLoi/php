@@ -5,6 +5,7 @@ class json extends CI_Controller {
 	public function __construct()
 	{
 		parent::__construct();
+		$this->load->model('json_model');
 	}
 
 	public function index()
@@ -40,7 +41,27 @@ class json extends CI_Controller {
 		    'items' => $data
 		];
 		$this->load->view('json_view', $result);
+	}
 
+	public function delete_json($phone_number)
+	{
+		// get data 
+		$data = $this->json_model->showData();
+		$data = json_decode($data);
+
+		// check element need delete in list
+		foreach ($data as $key => $value) 
+		{
+			if($value->phone_number === $phone_number) 
+			{
+				unset($data[$key]);
+			}
+		}
+		$data = json_encode($data);
+		if ($this->json_model->updateData($data))
+		{
+			$this->load->view('notification_view');
+		}
 	}
 
 }

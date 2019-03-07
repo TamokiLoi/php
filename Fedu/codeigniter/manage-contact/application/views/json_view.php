@@ -19,6 +19,7 @@
 						<div class="card-block">
 							<h4 class="card-title">Name: <?= $value->name ?></h4>
 							<p class="card-text">Tel: <?= $value->phone_number ?></p>
+							<a href="json/delete_json/<?= $value->phone_number ?>" class="btn btn-danger"> <i class="fa fa-remove"></i></a>
 						</div>
 					</div>
 				<?php endforeach ?>
