@@ -58,9 +58,41 @@ class json extends CI_Controller {
 			}
 		}
 		$data = json_encode($data);
+
 		if ($this->json_model->updateData($data))
 		{
 			$this->load->view('notification_view');
+		}
+	}
+
+	public function add_json()
+	{
+		// get data from view
+		$name = $this->input->post('name');
+		$phone_number = $this->input->post('phone_number');
+
+		// get data_json 
+		$data = $this->json_model->showData();
+
+		// decode data -> array
+		$data = json_decode($data, true);
+
+		// create element 
+		$child = [
+		    'name' => $name,
+		    'phone_number' => $phone_number 
+		];
+
+		// push child to array-data
+		array_push($data, $child);
+
+		// encode data
+		$data = json_encode($data);
+
+		// call model
+		if ($this->json_model->updateData($data))
+		{
+			return $this->load->view('notification_view');
 		}
 	}
 

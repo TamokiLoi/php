@@ -10,7 +10,7 @@
  	<link rel="stylesheet" href="<?php echo base_url() ?>1.css">
 </head>
 <body>
-
+	<?php include "menu.php"; ?>
 	<div class="container">
 		<div class="card-deck-wrapper">
 			<div class="card-deck">
@@ -25,6 +25,22 @@
 				<?php endforeach ?>
 			</div>
 		</div>
+	</div>
+
+	<div class="container">
+		<form method="post" action="json/add_json">
+			<fieldset class="form-group">
+				<label for="formGroupExampleInput">Name</label>
+				<input name="name" type="text" class="form-control" id="formGroupExampleInput" placeholder="input name">
+			</fieldset>
+			<fieldset class="form-group">
+				<label for="formGroupExampleInput2">Phone Number</label>
+				<input name="phone_number" type="text" class="form-control" id="formGroupExampleInput2" placeholder="input phone number">
+			</fieldset>
+			<fieldset class="form-group">
+				<input type="submit" class="form-control btn btn-danger" value="Submit">
+			</fieldset>
+		</form>
 	</div>
 	
 </body>

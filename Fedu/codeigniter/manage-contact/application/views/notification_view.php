@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<meta http-equiv="refesh" content="1; url=<?= base_url() ?>/json">
+	<meta http-equiv="refresh" content="2;url=<?php echo base_url(); ?>json">
 	<title>Action Complete</title>
 </head>
 <body>
@@ -11,7 +11,7 @@
 		<br>
 		<br>
 		<div class="alert alert-info" role="alert">
-			You deleted <strong>complete!</strong> 
+			You action <strong>complete!</strong> 
 		</div>
 	</div>
 </body>

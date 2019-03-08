@@ -39,7 +39,7 @@ class json_model extends CI_Model {
 		    'name' => 'contact',
 		    'data' =>  $newData
 		];
-		$this->db->update('warehouse', $data);
+		return $this->db->update('warehouse', $data);
 	}
 
 }
