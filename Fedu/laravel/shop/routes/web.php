@@ -15,12 +15,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/users', 'UserController@index');
-Route::get('/users/create', 'UserController@create');
-Route::post('/users/store', 'UserController@store');
-Route::get('/users/{id}/show', 'UserController@show')->where(['id' => '[0-9]+']);
-Route::put('/users/{id}/update', 'UserController@update');
-Route::delete('/users/{id}/delete', 'UserController@delete');
+Route::get('/users', 'UserController@index')->name('user.index');
+Route::get('/users/create', 'UserController@create')->name('user.create');
+Route::post('/users/store', 'UserController@store')->name('user.store');
+Route::get('/users/{id}/show', 'UserController@show')->where(['id' => '[0-9]+'])->name('user.show');
+Route::put('/users/{id}/update', 'UserController@update')->name('user.update');
+Route::delete('/users/{id}/delete', 'UserController@delete')->name('user.delete');
 
 Auth::routes();
 

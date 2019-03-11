@@ -28,22 +28,22 @@ class UserController extends Controller
 
     public function create()
     {
-        return 'Create';
+        return view('test');
     }
 
-    public function store()
+    public function store(Request $request)
     {
-        return 'store';
+        return 'store ' . $request->input('text');
     }
 
     public function show($id)
     {
-        return 'show ' . $id;
+        return view('test')->with(compact(['id']));
     }
 
-    public function update()
+    public function update(Request $request, $id)
     {
-        return 'update';
+        return 'update ' . $id . $request;
     }
 
     public function delete()
