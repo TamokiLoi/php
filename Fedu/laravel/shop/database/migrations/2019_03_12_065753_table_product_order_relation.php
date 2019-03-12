@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class TableProductsRelation extends Migration
+class TableProductOrderRelation extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,14 @@ class TableProductsRelation extends Migration
      */
     public function up()
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->foreign('category_id')
-                ->references('id')
-                ->on('categories')
+        Schema::table('product_order', function (Blueprint $table) {
+            $table->foreign('product_id')->references('id')
+                ->on('products')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
+            $table->foreign('order_id')->references('id')
+                ->on('orders')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
         });
@@ -35,9 +33,9 @@ class TableProductsRelation extends Migration
      */
     public function down()
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-            $table->dropForeign(['category_id']);
+        Schema::table('product_order', function (Blueprint $table) {
+            $table->dropForeign(['product_id']);
+            $table->dropForeign(['order_id']);
         });
     }
 }
