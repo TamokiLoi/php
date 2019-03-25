@@ -12,9 +12,8 @@
                         <h3 style="margin: 0px;">Create New User</h3>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('admin.user.store' }}" method="POST">
+                        <form action="{{ route('admin.user.store') }}" method="POST">
                             {{ csrf_field() }}
-                            {{ method_field('put') }}
                             <div class="form-group">
                                 <label for="name">Name</label>
                                 <input type="text" class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}"
