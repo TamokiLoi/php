@@ -43,6 +43,7 @@
                 <ul class="navbar-nav mr-auto" style="margin-top: 4px;">
                     <li class="nav-item"><a href="{{ route('admin.user.index') }}" class="nav-link">List Users</a></li>
                     <li class="nav-item"><a href="{{ route('admin.category.index') }}" class="nav-link">List Categories</a></li>
+                    <li class="nav-item"><a href="{{ route('admin.product.index') }}" class="nav-link">List Products</a></li>
                 </ul>
 
                 <!-- Right Side Of Navbar -->
