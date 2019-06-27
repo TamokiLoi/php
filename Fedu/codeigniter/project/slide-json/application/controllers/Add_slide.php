@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Slides extends CI_Controller {
+class Add_slide extends CI_Controller {
 
 	public function __construct()
 	{
@@ -41,6 +41,17 @@ class Slides extends CI_Controller {
 		        $uploadOk = 0;
 		    }
 		}
+		// Check if $uploadOk is set to 0 by an error
+		if ($uploadOk == 0) {
+		    echo "Sorry, your file was not uploaded.";
+		// if everything is ok, try to upload file
+		} else {
+		    if (move_uploaded_file($_FILES["slide_image"]["tmp_name"], $target_file)) {
+		        // echo "The file ". basename( $_FILES["slide_image"]["name"]). " has been uploaded.";
+		    } else {
+		        // echo "Sorry, there was an error uploading your file.";
+		    }
+		}
 
 		// get data from view
 		$title = $this->input->post('title');
@@ -68,12 +79,6 @@ class Slides extends CI_Controller {
 			$this->load->view('success');
 		}
 	}
-
-	public function editSlide()
-	{
-		
-	}
-
 }
 
 /* End of file Slides.php */

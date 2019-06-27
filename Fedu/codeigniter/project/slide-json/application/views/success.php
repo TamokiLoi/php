@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<meta http-equiv="refresh" content='1; url=<?= base_url() ?>index.php/slides'>
+	<meta http-equiv="refresh" content='1; url=<?= base_url() ?>'>
 	<title>Update Success</title>
 	<script type="text/javascript" src="<?= base_url() ?>vendor/bootstrap.js"></script>
     <script type="text/javascript" src="<?= base_url() ?>1.js"></script>

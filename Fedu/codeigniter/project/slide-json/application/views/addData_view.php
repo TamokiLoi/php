@@ -7,15 +7,31 @@
     <script type="text/javascript" src="<?= base_url() ?>1.js"></script>
     <link rel="stylesheet" href="<?= base_url() ?>vendor/font-awesome.css">
     <link rel="stylesheet" href="<?= base_url() ?>1.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="<?= base_url() ?>/vendor/bootstrap.css">
 </head>
 <body>
+    <nav class="navbar navbar-light bg-faded">
+	  <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2">
+	    &#9776;
+	  </button>
+	  <div class="collapse navbar-toggleable-xs" id="exCollapsingNavbar2">
+	    <a class="navbar-brand" href="#">Backend slide</a>
+	    <ul class="nav navbar-nav">
+	      <li class="nav-item active">
+	        <a class="nav-link" href="<?= base_url() ?>index.php/add_slide">Add slide <span class="sr-only">(current)</span></a>
+	      </li>
+	      <li class="nav-item">
+	        <a class="nav-link" href="<?= base_url() ?>index.php/edit_slide">Edit slide</a>
+	      </li>
+	    </ul>
+	  </div>
+	</nav>
 	<div class="container">
 		<div class="row">
 			<div class="col-sm-6 offset-sm-3">
 				<h3 class="text-center">Add New Slide</h3>
 				<hr>
-				<form method="POST" action="slides/addSlide" enctype="multipart/form-data">
+				<form method="POST" action="add_slide/addSlide" enctype="multipart/form-data">
 					<fieldset class="form-group">
 						<label for="formGroupExampleInput">Title Slide</label>
 						<input name="title" type="text" class="form-control" id="title" placeholder="title">
