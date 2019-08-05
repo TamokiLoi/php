@@ -34,12 +34,13 @@ class UserController extends Controller
         $valid = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required||confirmed'
+            'password' => 'required|confirmed'
         ], [
-            'name.required' => 'Vui lòng nhập họ và tên', 
-            'email.required' => 'Vui lòng nhập email', 
-            'email.email' => 'Không đúng định dạng email', 
-            'password.required' => 'Vui lòng nhập mật khẩu', 
+            'name.required' => 'Vui lòng nhập Họ và Tên', 
+            'email.required' => 'Vui lòng nhập Email', 
+            'email.email' => 'Không đúng định dạng Email', 
+            'email.unique' => 'Email đã được sử dụng, vui lòng nhập Email khác.', 
+            'password.required' => 'Vui lòng nhập Mật khẩu'
         ]);
         if ($valid->fails()) {
             return redirect()->back()->withErrors($valid)->withInput();
@@ -55,16 +56,49 @@ class UserController extends Controller
 
     public function show($id)
     {
-        return view('test')->with(compact(['id']));
+        $data['user'] = User::find($id);
+        if ($data['user'] !== null) {
+            return view('admin.users.show', $data);
+        }
+        return redirect()->route('admin.user.index')->with('error', "This user could not be found!");
     }
 
     public function update(Request $request, $id)
     {
-        return 'Update: ' . $id . ', text: ' . $request->input('text');
+        $valid = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'password' => 'confirmed'
+        ], [
+            'name.required' => 'Vui lòng nhập Họ và Tên', 
+            'email.required' => 'Vui lòng nhập Email', 
+            'email.email' => 'Không đúng định dạng Email', 
+            'email.unique' => 'Email đã được sử dụng, vui lòng nhập Email khác.', 
+        ]);
+        if ($valid->fails()) {
+            return redirect()->back()->withErrors($valid)->withInput();
+        } else {
+            $user = User::find($id);
+            if ($user !== null) {
+                $user->name = $request->input('name');
+                $user->email = $request->input('email');
+                if ($request->input('password')) {
+                    $user->password = bcrypt($request->input('password'));
+                }
+                $user->save();
+                return redirect()->route('admin.user.index')->with('message', "Update infor user: $user->name success");
+            }
+            return redirect()->route('admin.user.index')->with('error', "This user could not be found!");
+        }
     }
 
-    public function delete()
+    public function delete($id)
     {
-        return 'Delete';
+        $user = User::find($id);
+        if ($user !== null) {
+            $user->delete();
+            return redirect()->route('admin.user.index')->with('message', "Delete user: $user->name success");
+        }
+        return redirect()->route('admin.user.index')->with('error', "This user could not be found!");
     }
 }

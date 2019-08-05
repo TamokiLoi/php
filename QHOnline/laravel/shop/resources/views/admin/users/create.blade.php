@@ -17,14 +17,14 @@
                         <div class="form-group">
                             <label for="name">Name</label>
                             <input type="text" class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}"
-                                id="name" name="name" placeholder="Enter name">
+                                id="name" name="name" placeholder="Enter name" value="{{ old('name') }}">
                             <div class="invalid-feedback">{{ $errors->first('name') }}</div>
                         </div>
 
                         <div class="form-group">
                             <label for="email">Email address</label>
                             <input type="email" class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}"
-                                id="email" name="email" placeholder="Enter email">
+                                id="email" name="email" placeholder="Enter email" value="{{ old('email') }}">
                             <div class="invalid-feedback">{{ $errors->first('email') }}</div>
                         </div>
 
@@ -42,7 +42,7 @@
                                 name="password_confirmation" placeholder="Re-Password">
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
                     </form>
                 </div>
             </div>

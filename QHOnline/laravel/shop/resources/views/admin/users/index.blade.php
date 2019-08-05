@@ -17,6 +17,11 @@
                         {{ session('message') }}
                     </div>
                     @endif
+                    @if(session('error'))
+                    <div class="alert alert-danger" style="font-weight: bold">
+                        {{ session('error') }}
+                    </div>
+                    @endif
                     <div class="table-responsive">
                         <table class="table table-bordered">
                             <thead>
@@ -42,9 +47,15 @@
                                             class="btn btn-primary"><i class="far fa-edit"></i>
                                         </a>
                                         <a href="{{ route('admin.user.delete', ['id' => $user->id]) }}"
-                                            class="btn btn-danger">
+                                            class="btn btn-danger" onclick="event.preventDefault();
+                                            document.getElementById('user-delete-{{ $user->id }}').submit();">
                                             <i class="far fa-trash-alt"></i>
                                         </a>
+                                        <form action="{{ route('admin.user.delete', ['id' => $user->id]) }}"
+                                            method="POST" id="user-delete-{{ $user->id }}">
+                                            {{ csrf_field() }}
+                                            {{ method_field('delete') }}
+                                        </form>
                                     </td>
                                 </tr>
                                 @empty
