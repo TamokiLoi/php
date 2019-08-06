@@ -52,7 +52,7 @@
                                         </a>
                                         <a href="{{ route('admin.category.delete', ['id' => $category->id]) }}"
                                             class="btn btn-danger" onclick="event.preventDefault();
-                                            window.confirm('Bạn đã chắc chắn xóa chuyên mục này chưa?') ? 
+                                            window.confirm('Bạn có chắc chắn xóa chuyên mục này không?') ? 
                                             document.getElementById('category-delete-{{ $category->id }}').submit() : 0;">
                                             <i class="far fa-trash-alt"></i>
                                         </a>

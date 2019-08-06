@@ -50,7 +50,6 @@ $factory->define(Tag::class, function (Faker $faker) {
 });
 
 $factory->define(Order::class, function (Faker $faker) {
-    $name = $faker->name;
     return [
         'user_id' => rand(1, 50),
         'address' => $faker->text(80),

@@ -26,7 +26,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $data['products'] = Product::with('user', 'category')->orderBy('id', 'desc')->paginate(5);
+        $data['products'] = Product::with('user')->orderBy('id', 'desc')->paginate(5);
         return view('admin.products.index', $data);
     }
 

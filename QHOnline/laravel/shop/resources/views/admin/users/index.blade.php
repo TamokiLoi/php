@@ -48,7 +48,8 @@
                                         </a>
                                         <a href="{{ route('admin.user.delete', ['id' => $user->id]) }}"
                                             class="btn btn-danger" onclick="event.preventDefault();
-                                            document.getElementById('user-delete-{{ $user->id }}').submit();">
+                                            window.confirm('Bạn có chắc chắn xóa người dùng này không?') ? 
+                                            document.getElementById('user-delete-{{ $user->id }}').submit() : 0;">
                                             <i class="far fa-trash-alt"></i>
                                         </a>
                                         <form action="{{ route('admin.user.delete', ['id' => $user->id]) }}"

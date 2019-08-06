@@ -45,7 +45,8 @@
                                         <td>{{ $product->code }}</td>
                                         <td>{{ $product->sale_price }}</td>
                                         <td>{{ $product->quantity }}</td>
-                                        <td>{{ $product->image }}</td>
+                                        {{-- <td>{{ $product->image }}</td> --}}
+                                        <td>Empty</td>
                                         <td>{{ $product->user->name }}</td>
                                         <td>{{ $product->updated_at }}</td>
                                         <td>
@@ -53,7 +54,8 @@
                                                class="btn btn-primary"><i class="far fa-edit"></i></a>
                                             <a href="{{ route('admin.product.delete', ['id' => $product->id]) }}"
                                                class="btn btn-danger" onclick="event.preventDefault();
-                                                    document.getElementById('product-delete-{{ $product->id }}').submit();">
+                                               window.confirm('Bạn có chắc chắn xóa sản phẩm này không?') ? 
+                                                    document.getElementById('product-delete-{{ $product->id }}').submit() : 0;">
                                                 <i class="fas fa-trash-alt"></i>
                                             </a>
                                             <form action="{{ route('admin.product.delete', ['id' => $product->id]) }}"
