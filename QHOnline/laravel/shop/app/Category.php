@@ -14,4 +14,9 @@ class Category extends Model
         'order',
         'parent',
     ];
+
+    public function products() 
+    {
+        return $this->hasMany('App\Product', 'category_id', 'id');
+    }
 }

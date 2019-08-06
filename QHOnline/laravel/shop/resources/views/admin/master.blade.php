@@ -49,6 +49,9 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.category.index') }}" class="nav-link">Category</a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.product.index') }}" class="nav-link">Product</a>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
