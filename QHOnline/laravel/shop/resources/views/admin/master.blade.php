@@ -43,7 +43,11 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto" style="margin-top: 4px;">
-                        <li class="nav-item"><a href="{{ route('admin.user.index') }}" class="nav-link">List Users</a>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.user.index') }}" class="nav-link">User</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.category.index') }}" class="nav-link">Category</a>
                         </li>
                     </ul>
 

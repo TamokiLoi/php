@@ -18,14 +18,14 @@
                         <div class="form-group">
                             <label for="name">Name</label>
                             <input type="text" class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}"
-                                id="name" name="name" placeholder="Enter name" value="{{ $user->name }}">
+                                id="name" name="name" placeholder="Enter Name" value="{{ $user->name }}">
                             <div class="invalid-feedback">{{ $errors->first('name') }}</div>
                         </div>
 
                         <div class="form-group">
                             <label for="email">Email address</label>
                             <input type="email" class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}"
-                                id="email" name="email" placeholder="Enter email" value="{{ $user->email }}">
+                                id="email" name="email" placeholder="Enter Email" value="{{ $user->email }}">
                             <div class="invalid-feedback">{{ $errors->first('email') }}</div>
                         </div>
 

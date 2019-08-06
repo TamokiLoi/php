@@ -26,6 +26,14 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.' ], function() {
     Route::get('/users/{id}', 'UserController@show')->where(['id' => '[0-9]+'])->name('user.show');
     Route::put('/users/{id}', 'UserController@update')->name('user.update');
     Route::delete('/users/{id}', 'UserController@delete')->name('user.delete');
+
+    // Category
+    Route::get('/categories', 'CategoryController@index')->name('category.index');
+    Route::get('/categories/create', 'CategoryController@create')->name('category.create');
+    Route::post('/categories', 'CategoryController@store')->name('category.store');
+    Route::get('/categories/{id}', 'CategoryController@show')->where(['id' => '[0-9]+'])->name('category.show');
+    Route::put('/categories/{id}', 'CategoryController@update')->name('category.update');
+    Route::delete('/categories/{id}', 'CategoryController@delete')->name('category.delete');
 });
 
 Route::get('/home', 'HomeController@index')->name('home');
