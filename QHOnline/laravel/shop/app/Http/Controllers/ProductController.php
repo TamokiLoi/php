@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Validator;
+use App\Category;
+use Intervention\Image\Facades\Image;
+use App\ImageStore\Facades\Tool;
 
 class ProductController extends Controller
 {
@@ -26,13 +28,13 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $data['products'] = Product::with('user')->orderBy('id', 'desc')->paginate(5);
+        $data['products'] = Product::with('user')->orderBy('id', 'desc')->paginate(4);
         return view('admin.products.index', $data);
     }
 
     public function create()
     {
-        $data['categories'] = Product::orderBy('name', 'asc')->get();
+        $data['categories'] = Category::orderBy('name', 'asc')->get();
         return view('admin.products.create', $data);
     }
 
@@ -46,21 +48,69 @@ class ProductController extends Controller
             'sale_price' => 'required|numeric|min:0',
             'original_price' => 'required|numeric|min:0',
             'quantity' => 'required|numeric|min:0',
-            'image' => 'image|size:2048',
-            'category_id' => 'required|exists:categories,id'
+            'image' => 'image|max:2048',
+            'category_id' => 'required|exists:categories,id',
+        ], [
+            // required
+            'name.required' => 'Vui lòng nhập Tên sản phẩm',
+            'code.required' => 'Vui lòng nhập Mã sản phẩm',
+            'content.required' => 'Vui lòng nhập nội dung cho sản phẩm',
+            'regular_price.required' => 'Vui lòng nhập giá thị trường',
+            'sale_price.required' => 'Vui lòng nhập giá bán',
+            'original_price.required' => 'Vui lòng nhập giá gốc',
+            'quantity.required' => 'Vui lòng nhập số lượng',
+            'category_id.required' => 'Vui lòng chọn chuyên mục',
+            // numeric
+            'regular_price.numeric' => 'Vui lòng nhập số theo đúng định dạng',
+            'sale_price.numeric' => 'Vui lòng nhập số theo đúng định dạng',
+            'original_price.numeric' => 'Vui lòng nhập số theo đúng định dạng',
+            // min
+            'regular_price.min' => 'Vui lòng nhập số nhỏ nhất cho phép là :min',
+            'sale_price.min' => 'Vui lòng nhập số nhỏ nhất cho phép là :min',
+            'original_price.min' => 'Vui lòng nhập số nhỏ nhất cho phép là :min',
+            'quantity.min' => 'Vui lòng nhập số nhỏ nhất cho phép là :min',
+            // unique
+            'code.unique' => 'Mã sản phẩm đã được sử dụng, vui lòng nhập mã khác.',
+            // exists
+            'parent.exists' => 'ID Chuyên mục không hợp lệ',
+            // image
+            'image.image' => 'Không đúng định dạng hình ảnh cho phép (jpg, png...)',
+            'image.max' => 'Dung lượng ảnh vượt quá giới hạn cho phép là :max',
         ]);
         if ($valid->fails()) {
             return redirect()->back()->withErrors($valid)->withInput();
         } else {
+            $imageName = '';
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 if (file_exists(public_path('uploads'))) {
+                    // arrangement folder by date
                     $folderName = date('Y-m');
-                    $fileName = bcrypt($image->getClientOriginalName() . time());
-                    if (!file_exists(public_path('uploads/' . $folderName))) {
-                        mkdir(public_path('uploads/' . $folderName), 0755);
+
+                    // encode
+                    $fileNameWithTimestamp = md5($image->getClientOriginalName() . time());
+
+                    // fileName
+                    $fileName = $fileNameWithTimestamp . '.' . $image->getClientOriginalExtension();
+
+                    // fileNameThumbnail
+                    $fileNameThumbnail = $fileNameWithTimestamp . '_thumb' . '.' . $image->getClientOriginalExtension();
+
+                    // check exists folder and create new folder
+                    if (!file_exists(public_path("uploads/$folderName"))) {
+                        mkdir(public_path("uploads/$folderName"), 0755);
                     }
-                    $image->move(public_path('uploads/' . $folderName), );
+
+                    // get imageName to save in SQL
+                    $imageName = "$folderName/$fileName";
+
+                    // move image to folder Uploads with fileName
+                    $image->move(public_path("uploads/$folderName"), $fileName);
+
+                    // save image thumbnail
+                    Image::make(public_path("uploads/$folderName/$fileName"))
+                        ->resize(100, 75)
+                        ->save(public_path("uploads/$folderName/$fileNameThumbnail"));
                 }
             }
             $product = Product::create([
@@ -71,6 +121,7 @@ class ProductController extends Controller
                 'sale_price' => $request->input('sale_price'),
                 'original_price' => $request->input('original_price'),
                 'quantity' => $request->input('quantity'),
+                'image' => $imageName,
                 'user_id' => auth()->id(),
                 'category_id' => $request->input('category_id')
             ]);
@@ -91,8 +142,15 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $valid = Validator::make($request->all(), [
-            'name' => 'required|unique:products,name,' . $id,
-            'parent' => 'required'
+            'name' => 'required',
+            'code' => 'required|unique:products,code',
+            'content' => 'required',
+            'regular_price' => 'required|numeric|min:0',
+            'sale_price' => 'required|numeric|min:0',
+            'original_price' => 'required|numeric|min:0',
+            'quantity' => 'required|numeric|min:0',
+            'image' => 'image|size:2048',
+            'category_id' => 'required|exists:categories,id'
         ]);
         if ($valid->fails()) {
             return redirect()->back()->withErrors($valid)->withInput();

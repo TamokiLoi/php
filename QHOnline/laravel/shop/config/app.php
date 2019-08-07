@@ -178,6 +178,13 @@ return [
         // debug bar for laravel
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
+
+        // lib image
+        Intervention\Image\ImageServiceProvider::class,
+
+        // lib myself
+        App\ImageStore\Providers\ToolServiceProvider::class,
+
     ],
 
     /*
@@ -229,6 +236,8 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
+        'Image' => Intervention\Image\Facades\Image::class,
+        'Tool' => App\ImageStore\Facades\Tool::class,
 
     ],
 

@@ -40,10 +40,10 @@ class CategoryController extends Controller
             'name' => 'required|unique:categories,name',
             'parent' => 'required'
         ], [
-            'name.required' => 'Vui lòng nhập Tên Chuyên Mục', 
-            'name.unique' => 'Tên Chuyên Mục đã được sử dụng, vui lòng nhập tên khác.', 
-            'parent.required' => 'Vui lòng chọn Chuyên Mục cha',
-            'parent.exists' => 'ID Chuyên mục không hợp lệ',
+            'name.required' => 'Vui lòng nhập tên Chuyên mục', 
+            'name.unique' => 'Tên chuyên mục đã được sử dụng, vui lòng nhập tên khác.', 
+            'parent.required' => 'Vui lòng chọn chuyên mục cha',
+            'parent.exists' => 'ID chuyên mục không hợp lệ',
         ]);
         $valid->sometimes('parent', 'exists:categories,id', function($input) {
             return $input->parent !== "0";
@@ -84,9 +84,9 @@ class CategoryController extends Controller
             'name' => 'required|unique:categories,name,' . $id,
             'parent' => 'required'
         ], [
-            'name.required' => 'Vui lòng nhập Tên Chuyên Mục', 
-            'name.unique' => 'Tên Chuyên Mục đã được sử dụng, vui lòng nhập tên khác.', 
-            'parent.required' => 'Vui lòng chọn Chuyên Mục cha'
+            'name.required' => 'Vui lòng nhập tên Chuyên mục', 
+            'name.unique' => 'Tên chuyên mục đã được sử dụng, vui lòng nhập tên khác.', 
+            'parent.required' => 'Vui lòng chọn chuyên mục cha',
         ]);
         if ($valid->fails()) {
             return redirect()->back()->withErrors($valid)->withInput();

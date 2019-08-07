@@ -3,13 +3,16 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <div>
-                <a href="{{ route('admin.user.create') }}" class="btn btn-primary">Add New User</a>
-            </div>
-            <br>
             <div class="card">
                 <div class="card-header">
-                    <h3 style="margin: 0px; font-weight: bold;">List Users</h3>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h3 style="margin: 0px; font-weight: bold;">List Users</h3>
+                        </div>
+                        <div class="col-md-9 text-right">
+                            <a href="{{ route('admin.user.create') }}" class="btn btn-primary">Add New User</a>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body" style="padding-bottom: 0;">
                     @if(session('message'))
@@ -42,7 +45,7 @@
                                     <td>{{ $user->email }}</td>
                                     <td>{{ $user->created_at }}</td>
                                     <td>{{ $user->updated_at }}</td>
-                                    <td>
+                                    <td class="text-center">
                                         <a href="{{ route('admin.user.show', ['id' => $user->id]) }}"
                                             class="btn btn-primary"><i class="far fa-edit"></i>
                                         </a>
