@@ -94,6 +94,10 @@
                             <div class="invalid-feedback">{{ $errors->first('category_id') }}</div>
                         </div>
 
+                        <div class="form-group" id="qh-app">
+                            <qh-attributes></qh-attributes>
+                        </div>
+
                         <button type="submit" class="btn btn-primary">Create</button>
                     </form>
                 </div>
@@ -101,4 +105,54 @@
         </div>
     </div>
 </div>
+@endsection
+@section('body_scripts_top')
+<script type="text/javascript" src="{{ asset('js/vue.js') }}"></script>
+<script type="text/x-template" id="qh-attributes-template">
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Attribute</th>
+                <th>Value</th>
+                <th>Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(item, key) in attributes">
+                <td>
+                    <input type="text" class="form-control" placeholder="Enter Attribute ">
+                </td>
+                <td>
+                    <input type="text" class="form-control" placeholder="Enter Value ">
+                </td>
+                <td class="text-center">
+                    <button type="button" v-on:click class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>
+                    <button type="button" v-on:click="addAttribute" class="btn btn-success"><i class="fas fa-plus"></i></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>    
+</script>
+<script type="text/javascript">
+    Vue.component('qh-attributes', {
+        template: '#qh-attributes-template',
+        data: function() {
+            var attributes = [
+                {name: '', value: ''}
+            ];
+            return {
+                attributes: attributes
+            };
+        },
+        methods: {
+            addAttribute: function () {
+                this.attributes.push({name: '', value: ''});
+                console.log(this.attributes);
+            },
+        }
+    });
+    new Vue({
+        el: '#qh-app'
+    });
+</script>
 @endsection

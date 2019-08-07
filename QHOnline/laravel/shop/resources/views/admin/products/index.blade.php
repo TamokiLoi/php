@@ -7,11 +7,13 @@
                 <div class="card-header">
                     <div class="row">
                         <div class="col-md-3">
-                            <h3 style="margin: 0px;">List Products</h3>
+                            <h3 style="margin: 0px; font-weight: bold;">List Products</h3>
                         </div>
                         <div class="col-md-9 text-right">
-                            <a href="{{ route('admin.product.create') }}" class="btn btn-primary">Add
-                                New Product</a>
+                            <a href="{{ route('admin.product.create') }}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Add New Product
+                            </a>
                         </div>
                     </div>
                 </div>

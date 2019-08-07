@@ -10,7 +10,10 @@
                             <h3 style="margin: 0px; font-weight: bold;">List Users</h3>
                         </div>
                         <div class="col-md-9 text-right">
-                            <a href="{{ route('admin.user.create') }}" class="btn btn-primary">Add New User</a>
+                            <a href="{{ route('admin.user.create') }}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Add New User
+                            </a>
                         </div>
                     </div>
                 </div>

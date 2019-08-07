@@ -10,7 +10,10 @@
                             <h3 style="margin: 0px; font-weight: bold;">List Categories</h3>
                         </div>
                         <div class="col-md-9 text-right">
-                            <a href="{{ route('admin.category.create') }}" class="btn btn-primary">Add New Category</a>
+                            <a href="{{ route('admin.category.create') }}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Add New Category
+                            </a>
                         </div>
                     </div>
                 </div>

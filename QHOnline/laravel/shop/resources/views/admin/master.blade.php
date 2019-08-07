@@ -14,8 +14,10 @@
         @show
     </title>
 
-    <!-- Scripts -->
+    <!-- Scripts Head -->
     <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/jquery.min.js') }}" defer></script>
+    <script src="{{ asset('js/bootstrap.min.js') }}" defer></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -25,6 +27,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    @yield('head_styles')
 </head>
 
 <body>
@@ -91,10 +94,13 @@
             </div>
         </nav>
 
-        <main class="pt-4">
+        <main class="py-4">
             @yield('content')
         </main>
     </div>
+    <!-- Scripts Body -->
+    @yield('body_scripts_top')
+    @yield('body_scripts_bottom')
 </body>
 
 </html>
