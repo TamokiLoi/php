@@ -33,7 +33,7 @@
                             <label for="content">Content</label>
                             <textarea value="{{ old('content') }}" name="content" id="content" rows="5"
                                 class="form-control {{ $errors->has('content') ? 'is-invalid' : '' }}"
-                                placeholder="Enter content" style="resize: none;"></textarea>
+                                placeholder="Enter content" style="resize: none;">{{ old('content') }}</textarea>
                             <div class="invalid-feedback">{{ $errors->first('content') }}</div>
                         </div>
 
@@ -94,6 +94,17 @@
                             <div class="invalid-feedback">{{ $errors->first('category_id') }}</div>
                         </div>
 
+                        <div class="form-group">
+                            <label for="tags">Tags</label>
+                            <select name="tags[]" id="tags" class="form-control select2" multiple>
+                                @if (old('tags'))
+                                @foreach(old('tags') as $tag)
+                                <option value="{{ $tag }}" selected>{{ $tag }}</option>
+                                @endforeach
+                                @endif
+                            </select>
+                        </div>
+
                         <div class="form-group" id="qh-app">
                             <qh-attributes></qh-attributes>
                         </div>
@@ -106,53 +117,76 @@
     </div>
 </div>
 @endsection
+
+{{-- Styles --}}
+@section('head_styles')
+<link rel="stylesheet" href="{{ asset('css/select2.min.css') }}">
+@endsection
+
+{{-- Scripts --}}
 @section('body_scripts_top')
 <script type="text/javascript" src="{{ asset('js/vue.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/select2.min.js') }}"></script>
+<script type="text/javascript">
+    $("#tags").select2({
+        tags: true,
+        tokenSeparators: [',']
+    })
+</script>
 <script type="text/x-template" id="qh-attributes-template">
     <table class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th>Attribute</th>
-                <th>Value</th>
-                <th>Options</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="(item, key) in attributes">
-                <td>
-                    <input type="text" class="form-control" placeholder="Enter Attribute ">
-                </td>
-                <td>
-                    <input type="text" class="form-control" placeholder="Enter Value ">
-                </td>
-                <td class="text-center">
-                    <button type="button" v-on:click class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>
-                    <button type="button" v-on:click="addAttribute" class="btn btn-success"><i class="fas fa-plus"></i></button>
-                </td>
-            </tr>
-        </tbody>
-    </table>    
-</script>
+            <thead>
+                <tr>
+                    <th>Attribute</th>
+                    <th>Value</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, key) in attributes">
+                    <td>
+                        <input type="text" :name="'attributes['+ key +'][name]'" v-model="item.name" class="form-control" placeholder="Enter Attribute ">
+                    </td>
+                    <td>
+                        <input type="text" :name="'attributes['+ key +'][value]'" v-model="item.value" class="form-control" placeholder="Enter Value ">
+                    </td>
+                    <td class="text-center">
+                        <button type="button" v-if="key !== 0" v-on:click="deleteAttribute(item)" class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>
+                        <button type="button" v-if="key == (attributes.length - 1)" v-on:click="addAttribute" class="btn btn-success"><i class="fas fa-plus"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>    
+    </script>
 <script type="text/javascript">
-    Vue.component('qh-attributes', {
-        template: '#qh-attributes-template',
-        data: function() {
-            var attributes = [
-                {name: '', value: ''}
-            ];
-            return {
-                attributes: attributes
-            };
-        },
-        methods: {
-            addAttribute: function () {
-                this.attributes.push({name: '', value: ''});
-                console.log(this.attributes);
+    @php
+        $attributes = old('attributes') ? json_encode(old('attributes')) : null;
+        @endphp
+        Vue.component('qh-attributes', {
+            template: '#qh-attributes-template',
+            data: function() {
+                var attributes = [
+                    {name: '', value: ''}
+                ];
+                @if ($attributes)
+                    attributes = {!! $attributes !!}; 
+                @endif
+                return {
+                    attributes: attributes
+                };
             },
-        }
-    });
-    new Vue({
-        el: '#qh-app'
-    });
+            methods: {
+                addAttribute: function () {
+                    this.attributes.push({name: '', value: ''});
+                    console.log(this.attributes)
+                },
+                deleteAttribute: function (item) {
+                    this.attributes.splice(this.attributes.indexOf(item), 1);
+                },
+            }
+        });
+        new Vue({
+            el: '#qh-app'
+        });
 </script>
 @endsection

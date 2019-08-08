@@ -8,6 +8,7 @@ use Validator;
 use App\Category;
 use Intervention\Image\Facades\Image;
 use App\ImageStore\Facades\Tool;
+use App\Tag;
 
 class ProductController extends Controller
 {
@@ -40,6 +41,9 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
+
+        // check valid
         $valid = Validator::make($request->all(), [
             'name' => 'required',
             'code' => 'required|unique:products,code',
@@ -80,6 +84,8 @@ class ProductController extends Controller
         if ($valid->fails()) {
             return redirect()->back()->withErrors($valid)->withInput();
         } else {
+
+            // add images
             $imageName = '';
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
@@ -113,6 +119,28 @@ class ProductController extends Controller
                         ->save(public_path("uploads/$folderName/$fileNameThumbnail"));
                 }
             }
+
+            // add attributes
+            $attributes = '';
+            if (
+                $request->has('attributes') && is_array($request->input('attributes'))
+                && count($request->input('attributes')) > 0
+            ) {
+                $attributes = $request->input('attributes');
+                foreach ($attributes as $key => $attribute) {
+                    if (!isset($attribute['name'])) {
+                        unset($attributes[$key]);
+                        continue;
+                    }
+                    if (!isset($attribute['value'])) {
+                        unset($attributes[$key]);
+                        continue;
+                    }
+                }
+                $attributes = json_encode($attributes);
+            }
+
+            // add product
             $product = Product::create([
                 'name' => $request->input('name'),
                 'code' => mb_strtoupper($request->input('code'), 'UTF-8'),
@@ -122,9 +150,28 @@ class ProductController extends Controller
                 'original_price' => $request->input('original_price'),
                 'quantity' => $request->input('quantity'),
                 'image' => $imageName,
+                'attributes' => $attributes,
                 'user_id' => auth()->id(),
                 'category_id' => $request->input('category_id')
             ]);
+
+            // add tags
+            if ($request->has('tags') && is_array($request->input('tags')) && count($request->input('tags')) > 0) {
+                $tags = $request->input('tags');
+                $tagsID = [];
+                foreach ($tags as $tag) {
+                    // firstOrCreate: check exsist and add new
+                    $tag = Tag::firstOrCreate([
+                        'name' => str_slug($tag)
+                    ], [
+                        'name' => str_slug($tag),
+                        'slug' => str_slug($tag)
+                    ]);
+                    $tagsID[] = $tag->id;
+                }
+                $product->tags()->sync($tagsID);
+            }
+
             return redirect()->route('admin.product.index')->with('message', "Create new product: $product->name success");
         }
     }

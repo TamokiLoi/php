@@ -15,9 +15,9 @@
     </title>
 
     <!-- Scripts Head -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
-    <script src="{{ asset('js/jquery.min.js') }}" defer></script>
-    <script src="{{ asset('js/bootstrap.min.js') }}" defer></script>
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+    @yield('head_scripts')
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -99,6 +99,7 @@
         </main>
     </div>
     <!-- Scripts Body -->
+    {{-- <script src="{{ asset('js/app.js') }}" defer></script> --}}
     @yield('body_scripts_top')
     @yield('body_scripts_bottom')
 </body>
