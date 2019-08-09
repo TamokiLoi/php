@@ -13,7 +13,7 @@
                 </div>
                 <div class="card-body">
                     <form action="{{ route('admin.product.update',  ['id' => $product->id]) }}" method="POST"
-                        target="_blank" enctype="multipart/form-data">
+                        enctype="multipart/form-data">
                         {{ csrf_field() }}
                         {{ method_field('put') }}
 

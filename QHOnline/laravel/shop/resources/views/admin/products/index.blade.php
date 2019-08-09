@@ -58,7 +58,7 @@
                                         <img src="{{ asset(get_thumbnail("uploads/$product->image")) }}" alt="image"
                                             class="img-fluid img-thumbnail" width="100" height="75">
                                         @else
-                                        <img src="{{ asset('images/no-img.png') }}" alt="no image"
+                                        <img src="{{ asset('images/no-img-thumbnail.jpg') }}" alt="no image"
                                             class="img-fluid img-thumbnail" width="100" height="75">
                                         @endif
                                     </td>

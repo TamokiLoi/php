@@ -11,13 +11,13 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('frontend.default.index');
+// });
 
 Auth::routes();
 
-Route::group(['prefix' => 'admin', 'as' => 'admin.' ], function() {
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Backend' ], function() {
 
     // User
     Route::get('/users', 'UserController@index')->name('user.index');
@@ -44,4 +44,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.' ], function() {
     Route::delete('/products/{id}', 'ProductController@delete')->name('product.delete');
 });
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::group(['as' => 'frontend.', 'namespace' => 'Frontend'], function() {
+    // Home
+    Route::get('/', 'HomeController@index')->name('home.index');
+    Route::get('/products/{slug}-{id}.html', 'HomeController@show')->name('home.show');
+});
