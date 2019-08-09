@@ -31,7 +31,7 @@
 
                         <div class="form-group">
                             <label for="content">Content</label>
-                            <textarea value="{{ old('content') }}" name="content" id="content" rows="5"
+                            <textarea name="content" id="content" rows="5"
                                 class="form-control {{ $errors->has('content') ? 'is-invalid' : '' }}"
                                 placeholder="Enter content" style="resize: none;">{{ old('content') }}</textarea>
                             <div class="invalid-feedback">{{ $errors->first('content') }}</div>
@@ -74,6 +74,9 @@
 
                         <div class="form-group">
                             <label for="image">Image</label>
+                            <br>
+                            {{-- <img src="{{ asset('uploads/' . get_thumbnail($product->image)) }}" alt=""
+                                class="img-responsive" style="margin-bottom: 10px;"> --}}
                             <input type="file" class="form-control {{ $errors->has('image') ? 'is-invalid' : '' }}"
                                 id="image" name="image" value="{{ old('image') }}" style="height: 42px;">
                             <div class="invalid-feedback">{{ $errors->first('image') }}</div>
@@ -109,7 +112,8 @@
                             <qh-attributes></qh-attributes>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Create</button>
+                        <button type="submit" class="btn btn-success">Create</button>
+                        <a href="{{ route('admin.product.index') }}" class="btn btn-primary">Cancel</a>
                     </form>
                 </div>
             </div>

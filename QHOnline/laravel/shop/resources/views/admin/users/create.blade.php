@@ -42,7 +42,8 @@
                                 name="password_confirmation" placeholder="Re-Password">
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Create</button>
+                        <button type="submit" class="btn btn-success">Create</button>
+                        <a href="{{ route('admin.user.index') }}" class="btn btn-primary">Cancel</a>
                     </form>
                 </div>
             </div>

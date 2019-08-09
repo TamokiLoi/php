@@ -42,6 +42,8 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         // dd($request->all());
+        // dd($request->image);
+        // dd($request->hasFile('image'));
 
         // check valid
         $valid = Validator::make($request->all(), [
@@ -68,6 +70,7 @@ class ProductController extends Controller
             'regular_price.numeric' => 'Vui lòng nhập số theo đúng định dạng',
             'sale_price.numeric' => 'Vui lòng nhập số theo đúng định dạng',
             'original_price.numeric' => 'Vui lòng nhập số theo đúng định dạng',
+            'quantity.numeric' => 'Vui lòng nhập số theo đúng định dạng',
             // min
             'regular_price.min' => 'Vui lòng nhập số nhỏ nhất cho phép là :min',
             'sale_price.min' => 'Vui lòng nhập số nhỏ nhất cho phép là :min',
@@ -76,7 +79,7 @@ class ProductController extends Controller
             // unique
             'code.unique' => 'Mã sản phẩm đã được sử dụng, vui lòng nhập mã khác.',
             // exists
-            'parent.exists' => 'ID Chuyên mục không hợp lệ',
+            'category_id.exists' => 'ID Chuyên mục không hợp lệ',
             // image
             'image.image' => 'Không đúng định dạng hình ảnh cho phép (jpg, png...)',
             'image.max' => 'Dung lượng ảnh vượt quá giới hạn cho phép là :max',
@@ -179,7 +182,8 @@ class ProductController extends Controller
     public function show($id)
     {
         $data['product'] = Product::find($id);
-        dd($data['product']->tags);
+        // dd($data['product']->attributes);
+        $data['categories'] = Category::orderBy('name', 'asc')->get();
         if ($data['product'] !== null) {
             return view('admin.products.show', $data);
         }
@@ -188,30 +192,151 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
+
+        // check valid
         $valid = Validator::make($request->all(), [
             'name' => 'required',
-            'code' => 'required|unique:products,code',
+            'code' => 'required|unique:products,code, ' . $id,
             'content' => 'required',
             'regular_price' => 'required|numeric|min:0',
             'sale_price' => 'required|numeric|min:0',
             'original_price' => 'required|numeric|min:0',
             'quantity' => 'required|numeric|min:0',
-            'image' => 'image|size:2048',
-            'category_id' => 'required|exists:categories,id'
+            'image' => 'image|max:2048',
+            'category_id' => 'required|exists:categories,id',
+        ], [
+            // required
+            'name.required' => 'Vui lòng nhập Tên sản phẩm',
+            'code.required' => 'Vui lòng nhập Mã sản phẩm',
+            'content.required' => 'Vui lòng nhập nội dung cho sản phẩm',
+            'regular_price.required' => 'Vui lòng nhập giá thị trường',
+            'sale_price.required' => 'Vui lòng nhập giá bán',
+            'original_price.required' => 'Vui lòng nhập giá gốc',
+            'quantity.required' => 'Vui lòng nhập số lượng',
+            'category_id.required' => 'Vui lòng chọn chuyên mục',
+            // numeric
+            'regular_price.numeric' => 'Vui lòng nhập số theo đúng định dạng',
+            'sale_price.numeric' => 'Vui lòng nhập số theo đúng định dạng',
+            'original_price.numeric' => 'Vui lòng nhập số theo đúng định dạng',
+            'quantity.numeric' => 'Vui lòng nhập số theo đúng định dạng',
+            // min
+            'regular_price.min' => 'Vui lòng nhập số nhỏ nhất cho phép là :min',
+            'sale_price.min' => 'Vui lòng nhập số nhỏ nhất cho phép là :min',
+            'original_price.min' => 'Vui lòng nhập số nhỏ nhất cho phép là :min',
+            'quantity.min' => 'Vui lòng nhập số nhỏ nhất cho phép là :min',
+            // unique
+            'code.unique' => 'Mã sản phẩm đã được sử dụng, vui lòng nhập mã khác.',
+            // exists
+            'category_id.exists' => 'ID Chuyên mục không hợp lệ',
+            // image
+            'image.image' => 'Không đúng định dạng hình ảnh cho phép (jpg, png...)',
+            'image.max' => 'Dung lượng ảnh vượt quá giới hạn cho phép là :max',
         ]);
         if ($valid->fails()) {
             return redirect()->back()->withErrors($valid)->withInput();
         } else {
             $product = Product::find($id);
             if ($product !== null) {
-                $order = 0;
-                if ($request->input('order')) {
-                    $order = $request->input('order');
+
+                // add images
+                $imageName = $product->image;
+                if ($request->hasFile('image')) {
+                    $image = $request->file('image');
+                    if (file_exists(public_path('uploads'))) {
+                        // arrangement folder by date
+                        $folderName = date('Y-m');
+
+                        // encode
+                        $fileNameWithTimestamp = md5($image->getClientOriginalName() . time());
+
+                        // fileName
+                        $fileName = $fileNameWithTimestamp . '.' . $image->getClientOriginalExtension();
+
+                        // fileNameThumbnail
+                        $fileNameThumbnail = $fileNameWithTimestamp . '_thumb' . '.' . $image->getClientOriginalExtension();
+
+                        // check exists folder and create new folder
+                        if (!file_exists(public_path("uploads/$folderName"))) {
+                            mkdir(public_path("uploads/$folderName"), 0755);
+                        }
+
+                        // get imageName to save in SQL
+                        $imageName = "$folderName/$fileName";
+
+                        // move image to folder Uploads with fileName
+                        $image->move(public_path("uploads/$folderName"), $fileName);
+
+                        // save image thumbnail
+                        Image::make(public_path("uploads/$folderName/$fileName"))
+                            ->resize(100, 75)
+                            ->save(public_path("uploads/$folderName/$fileNameThumbnail"));
+
+                        // check and delete old-image
+                        if (
+                            !is_dir(public_path('uploads/' . $product->image)) &&
+                            file_exists(public_path('uploads/' . $product->image))
+                        ) {
+                            unlink(public_path('uploads/' . $product->image));
+                            if (
+                                !is_dir(public_path('uploads/' . get_thumbnail($product->image))) &&
+                                file_exists(public_path('uploads/' . get_thumbnail($product->image)))
+                            ) {
+                                unlink(public_path('uploads/' . get_thumbnail($product->image)));
+                            }
+                        }
+                    }
                 }
+
+                // add attributes
+                $attributes = '';
+                if (
+                    $request->has('attributes') && is_array($request->input('attributes'))
+                    && count($request->input('attributes')) > 0
+                ) {
+                    $attributes = $request->input('attributes');
+                    foreach ($attributes as $key => $attribute) {
+                        if (!isset($attribute['name'])) {
+                            unset($attributes[$key]);
+                            continue;
+                        }
+                        if (!isset($attribute['value'])) {
+                            unset($attributes[$key]);
+                            continue;
+                        }
+                    }
+                    $attributes = json_encode($attributes);
+                }
+
+                // add product
                 $product->name = $request->input('name');
-                $product->parent = $request->input('parent');
-                $product->order = $order;
+                $product->code = mb_strtoupper($request->input('code'), 'UTF-8');
+                $product->content = $request->input('content');
+                $product->regular_price = $request->input('regular_price');
+                $product->sale_price = $request->input('sale_price');
+                $product->original_price = $request->input('original_price');
+                $product->quantity = $request->input('quantity');
+                $product->image = $imageName;
+                $product->attributes = $attributes;
+                $product->user_id = auth()->id();
+                $product->category_id = $request->input('category_id');
                 $product->save();
+
+                // add tags
+                if ($request->has('tags') && is_array($request->input('tags')) && count($request->input('tags')) > 0) {
+                    $tags = $request->input('tags');
+                    $tagsID = [];
+                    foreach ($tags as $tag) {
+                        $tag = Tag::firstOrCreate([
+                            'name' => str_slug($tag)
+                        ], [
+                            'name' => str_slug($tag),
+                            'slug' => str_slug($tag)
+                        ]);
+                        $tagsID[] = $tag->id;
+                    }
+                    $product->tags()->sync($tagsID);
+                }
+                
                 return redirect()->route('admin.product.index')->with('message', "Update info product: $product->name success");
             }
             return redirect()->route('admin.product.index')->with('error', "This product could not be found!");

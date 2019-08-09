@@ -44,7 +44,8 @@
                             <div class="invalid-feedback">{{ $errors->first('parent') }}</div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Create</button>
+                        <button type="submit" class="btn btn-success">Create</button>
+                        <a href="{{ route('admin.category.index') }}" class="btn btn-primary">Cancel</a>
                     </form>
                 </div>
             </div>

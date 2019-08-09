@@ -39,6 +39,7 @@
                                     <th>Quantity</th>
                                     <th>Image</th>
                                     <th>Author</th>
+                                    <th>Category</th>
                                     <th>Date Updated</th>
                                     <th>Options</th>
                                 </tr>
@@ -62,8 +63,9 @@
                                         @endif
                                     </td>
                                     <td class="align-middle">{{ $product->user->name }}</td>
-                                    <td class="align-middle">{{ $product->updated_at }}</td>
-                                    <td class="text-center align-middle">
+                                    <td class="align-middle">{{ $product->category->name }}</td>
+                                    <td class="align-middle" style="padding: 0 0 0 5px; width: 155px;">{{ $product->updated_at }}</td>
+                                    <td class="text-center align-middle" style="padding: 0; width: 100px;">
                                         <a href="{{ route('admin.product.show', ['id' => $product->id]) }}"
                                             class="btn btn-primary"><i class="far fa-edit"></i></a>
                                         <a href="{{ route('admin.product.delete', ['id' => $product->id]) }}"
