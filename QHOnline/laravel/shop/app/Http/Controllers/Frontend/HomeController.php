@@ -20,12 +20,11 @@ class HomeController extends Controller
 
     /**
      * Trang chủ
-     *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $data['products'] = Product::orderBy('id', 'desc')->limit(4)->get();
+        $data['products'] = Product::orderBy('id', 'desc')->limit(8)->get();
         return view('frontend.default.index', $data);
     }
 
@@ -33,7 +32,8 @@ class HomeController extends Controller
      * Đây là trang hiển thị sản phẩm
      */
     public function show($slug, $id) {
-        $data['products'] = Product::orderBy('id', 'desc')->limit(4)->get();
-        return view('frontend.default.index', $data);
+        $data['product'] = Product::find($id);
+        // dd($data);
+        return view('frontend.default.single-product', $data);
     }
 }

@@ -76,8 +76,17 @@
 
                         <div class="form-group">
                             <label for="image" style="display: block;">Image</label>
-                            <img id="showOldImage" src="{{ asset('uploads/' . get_thumbnail($product->image)) }}" alt=""
-                                class="img-responsive" style="margin-bottom: 10px;">
+                            <div>
+                                @if ($product->image &&
+                                file_exists(public_path(get_thumbnail("uploads/$product->image"))))
+                                <img src="{{ asset(get_thumbnail("uploads/$product->image")) }}" alt="image"
+                                    class="img-fluid img-thumbnail" width="100" height="75">
+                                @else
+                                <img src="{{ asset('images/no-img-thumbnail.jpg') }}" alt="no image"
+                                    class="img-fluid img-thumbnail" width="100" height="75">
+                                @endif
+                            </div>
+                            <br>
                             <input type="file" class="form-control {{ $errors->has('image') ? 'is-invalid' : '' }}"
                                 id="image" name="image" value="{{ $product->image }}" style="height: 42px;">
                             <div class="invalid-feedback">{{ $errors->first('image') }}</div>
@@ -174,12 +183,17 @@
     Vue.component('qh-attributes', {
         template: '#qh-attributes-template',
         data: function() {
-            var attributes = [
-                {name: '', value: ''}
-            ];
+            var attributes = null;
+
             @if($product->attributes)
                 attributes = {!! $product->attributes !!};
             @endif
+
+            if(attributes.length == 0) {
+                attributes = [
+                    {name: '', value: ''}
+                ];
+            }
             return {
                 attributes: attributes
             };

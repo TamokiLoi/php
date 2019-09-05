@@ -39,6 +39,12 @@
     <script src="{{ asset('themes/default/assets/js/html5shiv.js') }}"></script>
     <script src="{{ asset('themes/default/assets/js/respond.min.js') }}"></script>
     <![endif]-->
+    <script>
+        window.TMK = {
+            csrf: '{{ csrf_token() }}',
+            baseUrl: '{{ url('/') }}'
+        };
+    </script>
 
 </head>
 

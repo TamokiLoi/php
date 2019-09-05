@@ -47,5 +47,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Backend' ],
 Route::group(['as' => 'frontend.', 'namespace' => 'Frontend'], function() {
     // Home
     Route::get('/', 'HomeController@index')->name('home.index');
-    Route::get('/products/{slug}-{id}.html', 'HomeController@show')->name('home.show');
+    Route::get('/products/{slug}-{id}.html', 'HomeController@show')->name('home.show')
+    ->where([
+        'slug' => '[a-z-]+',
+        'id' => '[0-9]+'
+    ]);
 });

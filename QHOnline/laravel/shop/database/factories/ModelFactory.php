@@ -44,7 +44,7 @@ $factory->define(Category::class, function (Faker $faker) {
 $factory->define(Tag::class, function (Faker $faker) {
     $name = $faker->name;
     return [
-        'name' => $name,
+        'name' => Str::slug($name),
         'slug' => Str::slug($name)
     ];
 });
