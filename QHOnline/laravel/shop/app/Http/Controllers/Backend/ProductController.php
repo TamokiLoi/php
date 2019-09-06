@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Attachment;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Intervention\Image\Facades\Image;
@@ -42,10 +43,6 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
-        // dd($request->image);
-        // dd($request->hasFile('image'));
-
         // check valid
         $valid = Validator::make($request->all(), [
             'name' => 'required',
@@ -56,6 +53,7 @@ class ProductController extends Controller
             'original_price' => 'required|numeric|min:0',
             'quantity' => 'required|numeric|min:0',
             'image' => 'image|max:2048',
+            'images.*' => 'image|max:2048',
             'category_id' => 'required|exists:categories,id',
         ], [
             // required
@@ -83,45 +81,19 @@ class ProductController extends Controller
             'category_id.exists' => 'ID Chuyên mục không hợp lệ',
             // image
             'image.image' => 'Không đúng định dạng hình ảnh cho phép (jpg, png...)',
+            'images.*.image' => 'Không đúng định dạng hình ảnh cho phép (jpg, png...)',
+            // size
             'image.max' => 'Dung lượng ảnh vượt quá giới hạn cho phép là :max',
+            'images.*.max' => 'Dung lượng ảnh vượt quá giới hạn cho phép là :max',
         ]);
         if ($valid->fails()) {
             return redirect()->back()->withErrors($valid)->withInput();
         } else {
-
+            // dd($request->all());
             // add images
-            $imageName = '';
+            $imageName = null;
             if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                if (file_exists(public_path('uploads'))) {
-                    // arrangement folder by date
-                    $folderName = date('Y-m');
-
-                    // encode
-                    $fileNameWithTimestamp = md5($image->getClientOriginalName() . time());
-
-                    // fileName
-                    $fileName = $fileNameWithTimestamp . '.' . $image->getClientOriginalExtension();
-
-                    // fileNameThumbnail
-                    $fileNameThumbnail = $fileNameWithTimestamp . '_thumb' . '.' . $image->getClientOriginalExtension();
-
-                    // check exists folder and create new folder
-                    if (!file_exists(public_path("uploads/$folderName"))) {
-                        mkdir(public_path("uploads/$folderName"), 0755);
-                    }
-
-                    // get imageName to save in SQL
-                    $imageName = "$folderName/$fileName";
-
-                    // move image to folder Uploads with fileName
-                    $image->move(public_path("uploads/$folderName"), $fileName);
-
-                    // save image thumbnail
-                    Image::make(public_path("uploads/$folderName/$fileName"))
-                        ->resize(200, 150)
-                        ->save(public_path("uploads/$folderName/$fileNameThumbnail"));
-                }
+                $imageName = $this->saveImage($request->file('image'));
             }
 
             // add attributes
@@ -159,6 +131,18 @@ class ProductController extends Controller
                 'category_id' => $request->input('category_id')
             ]);
 
+            // add library images
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $file) {
+                    Attachment::create([
+                        'type' => 'images',
+                        'mime' => $file->getMimeType(),
+                        'path' => $this->saveImage($file),
+                        'product_id' => $product->id
+                    ]);
+                }
+            }
+
             // add tags
             if ($request->has('tags') && is_array($request->input('tags')) && count($request->input('tags')) > 0) {
                 $tags = $request->input('tags');
@@ -183,7 +167,6 @@ class ProductController extends Controller
     public function show($id)
     {
         $data['product'] = Product::find($id);
-        // dd($data['product']->attributes);
         $data['categories'] = Category::orderBy('name', 'asc')->get();
         if ($data['product'] !== null) {
             return view('admin.products.show', $data);
@@ -204,6 +187,7 @@ class ProductController extends Controller
             'original_price' => 'required|numeric|min:0',
             'quantity' => 'required|numeric|min:0',
             'image' => 'image|max:2048',
+            'images.*' => 'image|max:2048',
             'category_id' => 'required|exists:categories,id',
         ], [
             // required
@@ -231,7 +215,10 @@ class ProductController extends Controller
             'category_id.exists' => 'ID Chuyên mục không hợp lệ',
             // image
             'image.image' => 'Không đúng định dạng hình ảnh cho phép (jpg, png...)',
+            'images.*.image' => 'Không đúng định dạng hình ảnh cho phép (jpg, png...)',
+            // size
             'image.max' => 'Dung lượng ảnh vượt quá giới hạn cho phép là :max',
+            'images.*.max' => 'Dung lượng ảnh vượt quá giới hạn cho phép là :max',
         ]);
         if ($valid->fails()) {
             return redirect()->back()->withErrors($valid)->withInput();
@@ -239,7 +226,7 @@ class ProductController extends Controller
             $product = Product::find($id);
             if ($product !== null) {
 
-                // add images
+                // update images
                 $imageName = $product->image;
                 if ($request->hasFile('image')) {
                     $image = $request->file('image');
@@ -273,22 +260,28 @@ class ProductController extends Controller
                             ->save(public_path("uploads/$folderName/$fileNameThumbnail"));
 
                         // check and delete old-image
-                        if (
-                            !is_dir(public_path('uploads/' . $product->image)) &&
-                            file_exists(public_path('uploads/' . $product->image))
-                        ) {
-                            unlink(public_path('uploads/' . $product->image));
-                            if (
-                                !is_dir(public_path('uploads/' . get_thumbnail($product->image))) &&
-                                file_exists(public_path('uploads/' . get_thumbnail($product->image)))
-                            ) {
-                                unlink(public_path('uploads/' . get_thumbnail($product->image)));
-                            }
-                        }
+                        $this->deleteImage($product->image);
                     }
                 }
 
-                // add attributes
+                // update library images
+                if ($request->hasFile('images')) {
+                    // delete old-image
+                    foreach ($product->attachments as $file) {
+                        $this->deleteImage($file->path);
+                        $file->delete();
+                    }
+                    foreach ($request->file('images') as $file) {
+                        Attachment::create([
+                            'type' => 'images',
+                            'mime' => $file->getMimeType(),
+                            'path' => $this->saveImage($file),
+                            'product_id' => $product->id
+                        ]);
+                    }
+                }
+
+                // update attributes
                 $attributes = '';
                 if (
                     $request->has('attributes') && is_array($request->input('attributes'))
@@ -308,7 +301,7 @@ class ProductController extends Controller
                     $attributes = json_encode($attributes);
                 }
 
-                // add product
+                // update product
                 $product->name = $request->input('name');
                 $product->code = mb_strtoupper($request->input('code'), 'UTF-8');
                 $product->content = $request->input('content');
@@ -322,7 +315,7 @@ class ProductController extends Controller
                 $product->category_id = $request->input('category_id');
                 $product->save();
 
-                // add tags
+                // update tags
                 if ($request->has('tags') && is_array($request->input('tags')) && count($request->input('tags')) > 0) {
                     $tags = $request->input('tags');
                     $tagsID = [];
@@ -337,7 +330,6 @@ class ProductController extends Controller
                     }
                     $product->tags()->sync($tagsID);
                 }
-                
                 return redirect()->route('admin.product.index')->with('message', "Update info product: $product->name success");
             }
             return redirect()->route('admin.product.index')->with('error', "This product could not be found!");
@@ -352,5 +344,54 @@ class ProductController extends Controller
             return redirect()->route('admin.product.index')->with('message', "Delete product: $product->name success");
         }
         return redirect()->route('admin.product.index')->with('error', "This product could not be found!");
+    }
+
+    // function save Image
+    public function saveImage($image)
+    {
+        if (file_exists(public_path('uploads'))) {
+            // arrangement folder by date
+            $folderName = date('Y-m');
+
+            // encode
+            $fileNameWithTimestamp = md5($image->getClientOriginalName() . time());
+
+            // fileName
+            $fileName = $fileNameWithTimestamp . '.' . $image->getClientOriginalExtension();
+
+            // fileNameThumbnail
+            $fileNameThumbnail = $fileNameWithTimestamp . '_thumb' . '.' . $image->getClientOriginalExtension();
+
+            // check exists folder and create new folder
+            if (!file_exists(public_path("uploads/$folderName"))) {
+                mkdir(public_path("uploads/$folderName"), 0755);
+            }
+
+            // get imageName to save in SQL
+            $imageName = "$folderName/$fileName";
+
+            // move image to folder Uploads with fileName
+            $image->move(public_path("uploads/$folderName"), $fileName);
+
+            // save image thumbnail
+            Image::make(public_path("uploads/$folderName/$fileName"))
+                ->resize(200, 150)
+                ->save(public_path("uploads/$folderName/$fileNameThumbnail"));
+        }
+        return $imageName;
+    }
+
+    // function delete old-image
+    public function deleteImage($path)
+    {
+        if (!is_dir(public_path('uploads/' . $path)) && file_exists(public_path('uploads/' . $path))) {
+            unlink(public_path('uploads/' . $path));
+            if (
+                !is_dir(public_path('uploads/' . get_thumbnail($path))) &&
+                file_exists(public_path('uploads/' . get_thumbnail($path)))
+            ) {
+                unlink(public_path('uploads/' . get_thumbnail($path)));
+            }
+        }
     }
 }

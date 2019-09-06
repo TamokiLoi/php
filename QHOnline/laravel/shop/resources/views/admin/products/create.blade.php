@@ -13,6 +13,7 @@
                 </div>
                 <div class="card-body">
                     <form action="{{ route('admin.product.store') }}" method="POST" enctype="multipart/form-data">
+                        {{-- target="_blank" --}}
                         {{ csrf_field() }}
 
                         <div class="form-group">
@@ -75,11 +76,19 @@
                         <div class="form-group">
                             <label for="image">Image</label>
                             <br>
-                            {{-- <img src="{{ asset('uploads/' . get_thumbnail($product->image)) }}" alt=""
-                                class="img-responsive" style="margin-bottom: 10px;"> --}}
                             <input type="file" class="form-control {{ $errors->has('image') ? 'is-invalid' : '' }}"
-                                id="image" name="image" value="{{ old('image') }}" style="height: 42px;">
+                                id="image" name="image" value="{{ old('image') }}" style="height: 42px;" multiple>
                             <div class="invalid-feedback">{{ $errors->first('image') }}</div>
+                        </div>
+
+                        {{-- upload library images --}}
+                        {{-- {{ dd($errors->all()) }} --}}
+                        <div class="form-group">
+                            <label for="images">Library images product</label>
+                            <br>
+                            <input type="file" class="form-control {{ $errors->has('images.*') ? 'is-invalid' : '' }}"
+                                id="images" name="images[]" value="{{ old('images') }}" style="height: 42px;" multiple>
+                            <div class="invalid-feedback">{{ $errors->first('images.*') }}</div>
                         </div>
 
                         <div class="form-group">

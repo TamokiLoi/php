@@ -35,7 +35,7 @@
                             <label for="content">Content</label>
                             <textarea name="content" id="content" rows="5"
                                 class="form-control {{ $errors->has('content') ? 'is-invalid' : '' }}"
-                                placeholder="Enter content" style="resize: none;">{{ $product->code }}</textarea>
+                                placeholder="Enter content" style="resize: none;">{{ $product->content }}</textarea>
                             <div class="invalid-feedback">{{ $errors->first('content') }}</div>
                         </div>
 
@@ -74,15 +74,16 @@
                             <div class="invalid-feedback">{{ $errors->first('quantity') }}</div>
                         </div>
 
+                        {{-- image --}}
                         <div class="form-group">
                             <label for="image" style="display: block;">Image</label>
                             <div>
-                                @if ($product->image &&
+                                @if (!empty($product->image) &&
                                 file_exists(public_path(get_thumbnail("uploads/$product->image"))))
-                                <img src="{{ asset(get_thumbnail("uploads/$product->image")) }}" alt="image"
+                                    <img src="{{ asset(get_thumbnail("uploads/$product->image")) }}" alt="image"
                                     class="img-fluid img-thumbnail" width="100" height="75">
                                 @else
-                                <img src="{{ asset('images/no-img-thumbnail.jpg') }}" alt="no image"
+                                    <img src="{{ asset('images/no-img-thumbnail.jpg') }}" alt="no image"
                                     class="img-fluid img-thumbnail" width="100" height="75">
                                 @endif
                             </div>
@@ -90,6 +91,28 @@
                             <input type="file" class="form-control {{ $errors->has('image') ? 'is-invalid' : '' }}"
                                 id="image" name="image" value="{{ $product->image }}" style="height: 42px;">
                             <div class="invalid-feedback">{{ $errors->first('image') }}</div>
+                        </div>
+
+                        {{-- upload library images --}}
+                        {{-- {{ dd($product->attachments) }} --}}
+                        <div class="form-group">
+                            <label for="images">Library images product</label>
+                            <div>
+                                @forelse ($product->attachments as $file)
+                                    @if (file_exists(public_path(get_thumbnail("uploads/$file->path"))))
+                                        <img src="{{ asset(get_thumbnail("uploads/$file->path")) }}" alt="image"
+                                        class="img-fluid img-thumbnail" width="100" height="75">
+                                    @else
+                                        <img src="{{ asset('images/no-img-thumbnail.jpg') }}" alt="no image"
+                                        class="img-fluid img-thumbnail" width="100" height="75">
+                                    @endif
+                                @empty
+                                @endforelse
+                            </div>
+                            <br>
+                            <input type="file" class="form-control {{ $errors->has('images.*') ? 'is-invalid' : '' }}"
+                                id="images" name="images[]" value="{{ old('images') }}" style="height: 42px;" multiple>
+                            <div class="invalid-feedback">{{ $errors->first('images.*') }}</div>
                         </div>
 
                         <div class="form-group">

@@ -31,7 +31,7 @@ class Product extends Model
     {
         return $this->belongsTo('App\User', 'user_id', 'id');
     }
-    
+
     public function tags()
     {
         return $this->belongsToMany('App\Tag', 'product_tag', 'product_id', 'tag_id');
@@ -40,6 +40,11 @@ class Product extends Model
     public function orders()
     {
         return $this->belongsToMany('App\Order', 'product_order', 'product_id', 'order_id')
-        ->withPivot('quantity')->withTimestamps();
+            ->withPivot('quantity')->withTimestamps();
+    }
+
+    public function attachments()
+    { 
+        return $this->hasMany('App\Attachment', 'product_id', 'id');
     }
 }
