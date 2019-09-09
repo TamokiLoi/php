@@ -229,48 +229,22 @@ class ProductController extends Controller
                 // update images
                 $imageName = $product->image;
                 if ($request->hasFile('image')) {
-                    $image = $request->file('image');
-                    if (file_exists(public_path('uploads'))) {
-                        // arrangement folder by date
-                        $folderName = date('Y-m');
+                    // delete old-image
+                    $this->deleteImage($product->image);
 
-                        // encode
-                        $fileNameWithTimestamp = md5($image->getClientOriginalName() . time());
-
-                        // fileName
-                        $fileName = $fileNameWithTimestamp . '.' . $image->getClientOriginalExtension();
-
-                        // fileNameThumbnail
-                        $fileNameThumbnail = $fileNameWithTimestamp . '_thumb' . '.' . $image->getClientOriginalExtension();
-
-                        // check exists folder and create new folder
-                        if (!file_exists(public_path("uploads/$folderName"))) {
-                            mkdir(public_path("uploads/$folderName"), 0755);
-                        }
-
-                        // get imageName to save in SQL
-                        $imageName = "$folderName/$fileName";
-
-                        // move image to folder Uploads with fileName
-                        $image->move(public_path("uploads/$folderName"), $fileName);
-
-                        // save image thumbnail
-                        Image::make(public_path("uploads/$folderName/$fileName"))
-                            ->resize(200, 150)
-                            ->save(public_path("uploads/$folderName/$fileNameThumbnail"));
-
-                        // check and delete old-image
-                        $this->deleteImage($product->image);
-                    }
+                    // save new image
+                    $imageName = $this->saveImage($request->file('image'));
                 }
 
                 // update library images
                 if ($request->hasFile('images')) {
-                    // delete old-image
+                    // delete all-old-image-thumbnail
                     foreach ($product->attachments as $file) {
                         $this->deleteImage($file->path);
                         $file->delete();
                     }
+
+                    // save new list images
                     foreach ($request->file('images') as $file) {
                         Attachment::create([
                             'type' => 'images',
@@ -340,6 +314,15 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
         if ($product !== null) {
+            // delete image
+            $this->deleteImage($product->image);
+            // delete all-image-thumbnail
+            if (count($product->attachments) > 0) {
+                foreach ($product->attachments as $file) {
+                    $this->deleteImage($file->path);
+                    $file->delete();
+                }
+            }
             $product->delete();
             return redirect()->route('admin.product.index')->with('message', "Delete product: $product->name success");
         }
@@ -349,7 +332,7 @@ class ProductController extends Controller
     // function save Image
     public function saveImage($image)
     {
-        if (file_exists(public_path('uploads'))) {
+        if (!empty($image) && file_exists(public_path('uploads'))) {
             // arrangement folder by date
             $folderName = date('Y-m');
 
@@ -358,9 +341,6 @@ class ProductController extends Controller
 
             // fileName
             $fileName = $fileNameWithTimestamp . '.' . $image->getClientOriginalExtension();
-
-            // fileNameThumbnail
-            $fileNameThumbnail = $fileNameWithTimestamp . '_thumb' . '.' . $image->getClientOriginalExtension();
 
             // check exists folder and create new folder
             if (!file_exists(public_path("uploads/$folderName"))) {
@@ -373,10 +353,22 @@ class ProductController extends Controller
             // move image to folder Uploads with fileName
             $image->move(public_path("uploads/$folderName"), $fileName);
 
-            // save image thumbnail
-            Image::make(public_path("uploads/$folderName/$fileName"))
-                ->resize(200, 150)
-                ->save(public_path("uploads/$folderName/$fileNameThumbnail"));
+            // create image by layout ratio
+            $createImage = function ($suffix = '_thumb', $width = 250, $height = 170) use ($folderName,  $fileName, $fileNameWithTimestamp, $image) {
+                // fileNameThumbnail
+                $fileNameThumbnail = $fileNameWithTimestamp . $suffix . '.' . $image->getClientOriginalExtension();
+
+                // save image thumbnail or ratio
+                Image::make(public_path("uploads/$folderName/$fileName"))
+                    ->resize($width, $height)
+                    ->save(public_path("uploads/$folderName/$fileNameThumbnail"))
+                    ->destroy();
+            };
+            $createImage();
+            $createImage('_900x530', 900, 530);
+            $createImage('_900x300', 900, 300);
+            $createImage('_600x170', 600, 170);
+            $createImage('_80x80', 80, 80);
         }
         return $imageName;
     }
@@ -386,12 +378,18 @@ class ProductController extends Controller
     {
         if (!is_dir(public_path('uploads/' . $path)) && file_exists(public_path('uploads/' . $path))) {
             unlink(public_path('uploads/' . $path));
-            if (
-                !is_dir(public_path('uploads/' . get_thumbnail($path))) &&
-                file_exists(public_path('uploads/' . get_thumbnail($path)))
-            ) {
-                unlink(public_path('uploads/' . get_thumbnail($path)));
-            }
+            $deleteAllImages = function ($sizeArr) use ($path) {
+                foreach ($sizeArr as $size) {
+                    if (
+                        !is_dir(public_path('uploads/' . get_thumbnail($path, $size))) &&
+                        file_exists(public_path('uploads/' . get_thumbnail($path, $size)))
+                    ) {
+                        unlink(public_path('uploads/' . get_thumbnail($path, $size)));
+                    }
+                }
+            };
+            // delete list image thumbnail
+            $deleteAllImages(['_thumb', '_900x530', '_900x300', '_600x170', '_80x80']);
         }
     }
 }

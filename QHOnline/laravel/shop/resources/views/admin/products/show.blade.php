@@ -83,7 +83,7 @@
                                     <img src="{{ asset(get_thumbnail("uploads/$product->image")) }}" alt="image"
                                     class="img-fluid img-thumbnail" width="100" height="75">
                                 @else
-                                    <img src="{{ asset('images/no-img-thumbnail.jpg') }}" alt="no image"
+                                    <img src="{{ asset('images/no-img_thumb.jpg') }}" alt="no image"
                                     class="img-fluid img-thumbnail" width="100" height="75">
                                 @endif
                             </div>
@@ -103,7 +103,7 @@
                                         <img src="{{ asset(get_thumbnail("uploads/$file->path")) }}" alt="image"
                                         class="img-fluid img-thumbnail" width="100" height="75">
                                     @else
-                                        <img src="{{ asset('images/no-img-thumbnail.jpg') }}" alt="no image"
+                                        <img src="{{ asset('images/no-img_thumb.jpg') }}" alt="no image"
                                         class="img-fluid img-thumbnail" width="100" height="75">
                                     @endif
                                 @empty
@@ -212,7 +212,7 @@
                 attributes = {!! $product->attributes !!};
             @endif
 
-            if(attributes.length == 0) {
+            if(attributes == null || attributes.length == 0) {
                 attributes = [
                     {name: '', value: ''}
                 ];

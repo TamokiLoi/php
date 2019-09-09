@@ -555,7 +555,7 @@
                                         data-echo="{{ asset(get_thumbnail("uploads/$product->image")) }}" alt="Image">
                                     @else
                                     <img src="{{ asset('themes/default/assets/images/blank.gif') }}"
-                                        data-echo="{{ asset('images/no-img-thumbnail.jpg') }}" alt="No Image">
+                                        data-echo="{{ asset('images/no-img_thumb.jpg') }}" alt="No Image">
                                     @endif
                                 </div>
                                 <div class="body">
@@ -614,7 +614,7 @@
                                         data-echo="{{ asset(get_thumbnail("uploads/$product->image")) }}" alt="Image">
                                     @else
                                     <img src="{{ asset('themes/default/assets/images/blank.gif') }}"
-                                        data-echo="{{ asset('images/no-img-thumbnail.jpg') }}" alt="No Image">
+                                        data-echo="{{ asset('images/no-img_thumb.jpg') }}" alt="No Image">
                                     @endif
                                 </div>
                                 <div class="body">
